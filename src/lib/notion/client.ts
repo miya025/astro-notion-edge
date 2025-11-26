@@ -1,5 +1,5 @@
 import { Client } from '@notionhq/client';
-import type { PageObjectResponse, BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 import { NotionPostSchema, type NotionPost, type NotionBlock } from './types';
 
 const notion = new Client({

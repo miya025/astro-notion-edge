@@ -1,7 +1,7 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import NotionBlocks from '@/components/Notion/NotionBlocks.astro';
-import { getPosts, getPostBySlug, getPageBlocks } from '@/lib/notion/client';
+import { getPosts, getPageBlocks } from '@/lib/notion/client';
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -12,7 +12,6 @@ export async function getStaticPaths() {
   }));
 }
 
-const { slug } = Astro.params;
 const { post } = Astro.props;
 
 if (!post) {
@@ -29,64 +28,83 @@ const blocks = await getPageBlocks(post.id);
   article={true}
   publishedTime={post.publishedDate || undefined}
 >
-  <article class="max-w-3xl mx-auto px-4 py-12">
+  <article class="max-w-4xl mx-auto px-4 py-8 md:py-12 bg-white rounded-2xl shadow-sm my-8">
     <!-- Header -->
-    <header class="mb-8">
-      <h1 class="text-4xl md:text-5xl font-bold mb-4 leading-tight">
-        {post.title}
-      </h1>
-
-      <div class="flex items-center gap-4 text-gray-600 mb-6">
-        {post.publishedDate && (
-          <time datetime={post.publishedDate}>
-            {new Date(post.publishedDate).toLocaleDateString('ja-JP', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
-          </time>
-        )}
-        {post.author && (
-          <>
-            <span>•</span>
-            <span>{post.author}</span>
-          </>
-        )}
-      </div>
-
-      {post.tags.length > 0 && (
-        <div class="flex flex-wrap gap-2 mb-6">
-          {post.tags.map((tag) => (
-            <span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
-              {tag}
-            </span>
-          ))}
-        </div>
-      )}
-
+    <header class="mb-10">
       {post.coverImage && (
-        <div class="aspect-video overflow-hidden rounded-lg mb-8">
+        <div class="aspect-[2/1] sm:aspect-video overflow-hidden rounded-2xl mb-8 shadow-lg">
           <img
             src={post.coverImage}
             alt={post.title}
             class="w-full h-full object-cover"
+            loading="eager"
+            decoding="async"
+            width="1200"
+            height="675"
           />
         </div>
       )}
+
+      <div class="max-w-3xl mx-auto">
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 leading-tight text-gray-900">
+          {post.title}
+        </h1>
+
+        <div class="flex flex-wrap items-center gap-3 text-sm text-gray-600 mb-6">
+          {post.publishedDate && (
+            <time datetime={post.publishedDate} class="flex items-center gap-1.5">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              {new Date(post.publishedDate).toLocaleDateString('ja-JP', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </time>
+          )}
+          {post.author && (
+            <>
+              <span class="text-gray-400">•</span>
+              <span class="flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                {post.author}
+              </span>
+            </>
+          )}
+        </div>
+
+        {post.tags.length > 0 && (
+          <div class="flex flex-wrap gap-2">
+            {post.tags.map((tag) => (
+              <span class="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-medium rounded-full hover:bg-blue-100 transition-colors">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
     </header>
 
     <!-- Content -->
-    <div class="prose prose-lg max-w-none">
-      <NotionBlocks blocks={blocks} />
+    <div class="max-w-3xl mx-auto">
+      <div class="prose prose-lg prose-gray max-w-none prose-headings:font-bold prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl prose-img:shadow-md">
+        <NotionBlocks blocks={blocks} />
+      </div>
     </div>
 
     <!-- Back to Home -->
-    <div class="mt-12 pt-8 border-t border-gray-200">
+    <div class="max-w-3xl mx-auto mt-16 pt-8 border-t border-gray-200">
       <a
         href="/"
-        class="text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-2"
+        class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium transition-colors group"
       >
-        ← Back to all posts
+        <svg class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back to all posts
       </a>
     </div>
   </article>

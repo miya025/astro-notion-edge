@@ -6,67 +6,97 @@ const posts = await getPosts();
 ---
 
 <Layout>
-  <div class="max-w-4xl mx-auto px-4 py-12">
-    <h1 class="text-4xl font-bold mb-8">Blog Posts</h1>
+  <div class="max-w-5xl mx-auto px-4 py-8 sm:py-12 md:py-16">
+    <!-- Hero Section -->
+    <header class="mb-12 text-center">
+      <h1 class="text-4xl sm:text-5xl font-extrabold mb-4 text-gray-900">
+        Latest Articles
+      </h1>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+        Thoughts, tutorials, and insights about web development and design
+      </p>
+    </header>
 
     {posts.length === 0 ? (
-      <div class="text-center py-12">
-        <p class="text-gray-600 text-lg">No published posts yet.</p>
-        <p class="text-gray-500 text-sm mt-2">
+      <div class="text-center py-16 px-4">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+          <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <p class="text-gray-600 text-lg font-medium mb-2">No published posts yet.</p>
+        <p class="text-gray-500 text-sm">
           Check your Notion database and make sure you have posts with Status = "Published"
         </p>
       </div>
     ) : (
-      <div class="grid gap-8">
-        {posts.map((post) => (
-          <article class="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+      <div class="grid gap-6 md:gap-8 md:grid-cols-2 lg:grid-cols-2">
+        {posts.map((post, index) => (
+          <article class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl border border-gray-100 hover:border-gray-200 transition-all duration-300">
             <a href={`/${post.slug}`} class="block">
               {post.coverImage && (
-                <div class="aspect-video overflow-hidden bg-gray-100">
+                <div class="aspect-[16/9] overflow-hidden bg-gray-100 relative">
                   <img
                     src={post.coverImage}
                     alt={post.title}
-                    class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading={index < 2 ? 'eager' : 'lazy'}
+                    decoding="async"
+                    width="800"
+                    height="450"
                   />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
               )}
               <div class="p-6">
-                <div class="flex items-center gap-3 mb-3 text-sm text-gray-600">
+                <div class="flex items-center gap-3 mb-3 text-xs text-gray-500">
                   {post.publishedDate && (
-                    <time datetime={post.publishedDate}>
+                    <time datetime={post.publishedDate} class="flex items-center gap-1.5">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
                       {new Date(post.publishedDate).toLocaleDateString('ja-JP', {
                         year: 'numeric',
-                        month: 'long',
+                        month: 'short',
                         day: 'numeric',
                       })}
                     </time>
                   )}
                   {post.author && (
                     <>
-                      <span>•</span>
-                      <span>{post.author}</span>
+                      <span class="text-gray-300">•</span>
+                      <span class="flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        {post.author}
+                      </span>
                     </>
                   )}
                 </div>
 
-                <h2 class="text-2xl font-bold mb-2 text-gray-900 hover:text-blue-600 transition-colors">
+                <h2 class="text-xl sm:text-2xl font-bold mb-3 text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
                   {post.title}
                 </h2>
 
                 {post.excerpt && (
-                  <p class="text-gray-600 mb-4 line-clamp-3">
+                  <p class="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
                     {post.excerpt}
                   </p>
                 )}
 
                 {post.tags.length > 0 && (
-                  <div class="flex flex-wrap gap-2">
-                    {post.tags.map((tag) => (
-                      <span class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
-                        {tag}
+                  <div class="flex flex-wrap gap-2 mt-4">
+                    {post.tags.slice(0, 3).map((tag) => (
+                      <span class="px-2.5 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full">
+                        #{tag}
                       </span>
                     ))}
+                    {post.tags.length > 3 && (
+                      <span class="px-2.5 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">
+                        +{post.tags.length - 3}
+                      </span>
+                    )}
                   </div>
                 )}
               </div>

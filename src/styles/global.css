@@ -3,11 +3,41 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
   body {
     @apply bg-white text-gray-900 font-sans antialiased;
+    font-feature-settings: 'kern' 1, 'liga' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   a {
     @apply transition-colors duration-200;
+  }
+
+  /* line-clamp utilities for older browsers */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+@layer utilities {
+  /* Custom focus styles for accessibility */
+  .focus-visible-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2;
   }
 }

@@ -9,7 +9,6 @@ export const SITE_CONFIG = {
   // Navigation
   nav: [
     { name: 'Home', href: '/' },
-    { name: 'About', href: '/about' },
   ],
 
   // Social Links

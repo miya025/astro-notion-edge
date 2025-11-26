@@ -20,18 +20,18 @@ const props = Astro.props;
     <Head {...props} />
   </head>
   <body>
-    <div class="min-h-screen flex flex-col">
+    <div class="min-h-screen flex flex-col bg-gray-50">
       <!-- Header -->
-      <header class="border-b border-gray-200">
-        <nav class="max-w-4xl mx-auto px-4 py-6 flex items-center justify-between">
-          <a href="/" class="text-2xl font-bold text-gray-900 hover:text-gray-700">
+      <header class="bg-white border-b border-gray-200 sticky top-0 z-50 backdrop-blur-sm bg-white/95">
+        <nav class="max-w-6xl mx-auto px-4 py-4 sm:py-5 flex items-center justify-between">
+          <a href="/" class="text-xl sm:text-2xl font-bold text-gray-900 hover:text-blue-600 transition-colors">
             {SITE_CONFIG.title}
           </a>
-          <div class="flex gap-6">
+          <div class="flex gap-4 sm:gap-6">
             {SITE_CONFIG.nav.map((item) => (
               <a
                 href={item.href}
-                class="text-gray-600 hover:text-gray-900 font-medium"
+                class="text-sm sm:text-base text-gray-600 hover:text-gray-900 font-medium transition-colors"
               >
                 {item.name}
               </a>
@@ -41,24 +41,25 @@ const props = Astro.props;
       </header>
 
       <!-- Main Content -->
-      <main class="flex-1">
+      <main class="flex-1 bg-gray-50">
         <slot />
       </main>
 
       <!-- Footer -->
-      <footer class="border-t border-gray-200 mt-12">
-        <div class="max-w-4xl mx-auto px-4 py-8">
+      <footer class="bg-white border-t border-gray-200 mt-16">
+        <div class="max-w-6xl mx-auto px-4 py-8 sm:py-10">
           <div class="flex flex-col md:flex-row justify-between items-center gap-4">
             <p class="text-gray-600 text-sm">
               © {new Date().getFullYear()} {SITE_CONFIG.author}. All rights reserved.
             </p>
-            <div class="flex gap-4">
+            <div class="flex gap-5">
               {SITE_CONFIG.social.twitter && (
                 <a
                   href={SITE_CONFIG.social.twitter}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-gray-600 hover:text-gray-900"
+                  class="text-gray-600 hover:text-blue-600 transition-colors text-sm font-medium"
+                  aria-label="Twitter"
                 >
                   Twitter
                 </a>
@@ -68,7 +69,8 @@ const props = Astro.props;
                   href={SITE_CONFIG.social.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  class="text-gray-600 hover:text-gray-900"
+                  class="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium"
+                  aria-label="GitHub"
                 >
                   GitHub
                 </a>
