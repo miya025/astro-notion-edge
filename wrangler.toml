@@ -1,0 +1,13 @@
+name = "astro-notion-edge-pro"
+compatibility_date = "2024-11-26"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "./dist"
+
+# Cloudflare Pages の設定
+# このファイルは主にローカル開発 (wrangler pages dev) で使用されます
+# 本番デプロイは Cloudflare Pages の管理画面から行います
+
+# 環境変数 (ローカル開発用)
+# 本番環境の環境変数は Cloudflare Pages の設定画面で指定してください
+[vars]
+# NOTION_API_KEY = "secret_xxx" # .dev.vars ファイルに記載することを推奨

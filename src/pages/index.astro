@@ -2,6 +2,9 @@
 import Layout from '@/layouts/Layout.astro';
 import { getPosts } from '@/lib/notion/client';
 
+// SSGとしてビルド時に静的生成 (Astro v5)
+export const prerender = true;
+
 const posts = await getPosts();
 ---
 

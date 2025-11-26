@@ -3,6 +3,9 @@ import Layout from '@/layouts/Layout.astro';
 import NotionBlocks from '@/components/Notion/NotionBlocks.astro';
 import { getPosts, getPageBlocks } from '@/lib/notion/client';
 
+// SSGとしてビルド時に静的生成 (Astro v5)
+export const prerender = true;
+
 export async function getStaticPaths() {
   const posts = await getPosts();
 

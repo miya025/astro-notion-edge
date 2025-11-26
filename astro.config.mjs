@@ -1,11 +1,15 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
+import cloudflare from '@astrojs/cloudflare';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://example.com', // ユーザーが変更する
-  output: 'static', // Free版は完全静的
+  output: 'server', // Pro版: SSR + API Routes (Edge Functions)
+  adapter: cloudflare({
+    imageService: 'cloudflare', // Cloudflare Image Resizing を利用
+  }),
   integrations: [
     tailwind({
       applyBaseStyles: false, // カスタムスタイルを優先

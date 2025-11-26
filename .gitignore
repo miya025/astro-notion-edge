@@ -21,3 +21,4 @@ pnpm-debug.log*
 # IDEs
 .vscode/
 .idea/
+.wrangler/
