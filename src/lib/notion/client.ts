@@ -45,7 +45,7 @@ export async function getPosts(): Promise<NotionPost[]> {
 }
 
 /**
- * スラッグから特定の記事を取得
+ * スラッグから特定の記事を取得 (Publishedのみ)
  */
 export async function getPostBySlug(slug: string): Promise<NotionPost | null> {
   if (!DATABASE_ID) {
@@ -80,6 +80,37 @@ export async function getPostBySlug(slug: string): Promise<NotionPost | null> {
     return parseNotionPage(response.results[0] as PageObjectResponse);
   } catch (error) {
     console.error(`Failed to fetch post with slug "${slug}":`, error);
+    return null;
+  }
+}
+
+/**
+ * プレビュー用: スラッグから記事を取得 (Draft/Published問わず)
+ * Pro版専用機能
+ */
+export async function getPostBySlugForPreview(slug: string): Promise<NotionPost | null> {
+  if (!DATABASE_ID) {
+    throw new Error('NOTION_DATABASE_IDが設定されていません');
+  }
+
+  try {
+    const response = await notion.databases.query({
+      database_id: DATABASE_ID,
+      filter: {
+        property: 'Slug',
+        rich_text: {
+          equals: slug,
+        },
+      },
+    });
+
+    if (response.results.length === 0) {
+      return null;
+    }
+
+    return parseNotionPage(response.results[0] as PageObjectResponse);
+  } catch (error) {
+    console.error(`Failed to fetch preview post with slug "${slug}":`, error);
     return null;
   }
 }
