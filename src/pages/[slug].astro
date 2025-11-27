@@ -1,6 +1,7 @@
 ---
 import Layout from '@/layouts/Layout.astro';
 import NotionBlocks from '@/components/Notion/NotionBlocks.astro';
+import OptimizedImage from '@/components/Pro/OptimizedImage.astro';
 import { getPosts, getPageBlocks } from '@/lib/notion/client';
 
 // SSGとしてビルド時に静的生成 (Astro v5)
@@ -36,14 +37,15 @@ const blocks = await getPageBlocks(post.id);
     <header class="mb-10">
       {post.coverImage && (
         <div class="aspect-[2/1] sm:aspect-video overflow-hidden rounded-2xl mb-8 shadow-lg">
-          <img
+          <OptimizedImage
             src={post.coverImage}
             alt={post.title}
+            width={1920}
+            height={1080}
+            quality={90}
+            priority={true}
             class="w-full h-full object-cover"
-            loading="eager"
-            decoding="async"
-            width="1200"
-            height="675"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
           />
         </div>
       )}

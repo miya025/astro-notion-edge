@@ -1,0 +1,81 @@
+---
+/**
+ * Pro版専用: Cloudflare Image Resizing を活用した最適化画像コンポーネント
+ *
+ * 特徴:
+ * - レスポンシブ画像（srcset）のサポート
+ * - LCP最適化のための優先読み込み
+ * - 自動的なフォーマット最適化（WebP/AVIF）
+ * - Cloudflare CDNによるキャッシュ
+ */
+
+interface Props {
+  src: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  quality?: number;
+  priority?: boolean; // LCP要素の場合はtrue
+  loading?: 'eager' | 'lazy';
+  class?: string;
+  sizes?: string;
+}
+
+const {
+  src,
+  alt,
+  width = 1200,
+  height,
+  quality = 85,
+  priority = false,
+  loading = priority ? 'eager' : 'lazy',
+  class: className = '',
+  sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px',
+} = Astro.props;
+
+/**
+ * Cloudflare Image Resizing URLを生成
+ * https://developers.cloudflare.com/images/image-resizing/
+ */
+function getOptimizedUrl(imageUrl: string, width: number, format: 'auto' | 'webp' | 'avif' = 'auto'): string {
+  // 外部URLの場合はそのまま、内部URLの場合はCloudflare Image Resizingを使用
+  if (!imageUrl) return '';
+
+  // Cloudflare Image Resizing パラメータ
+  const params = [
+    `width=${width}`,
+    `quality=${quality}`,
+    `format=${format}`,
+    'fit=scale-down', // アスペクト比を維持
+  ].join(',');
+
+  return `/cdn-cgi/image/${params}/${imageUrl}`;
+}
+
+// レスポンシブ画像用のsrcset生成
+const widths = [640, 768, 1024, 1280, 1536, 1920];
+const srcset = widths
+  .filter(w => w <= width)
+  .map(w => `${getOptimizedUrl(src, w)} ${w}w`)
+  .join(', ');
+
+// メイン画像URL
+const optimizedSrc = getOptimizedUrl(src, width);
+
+// 高さを指定する場合のアスペクト比計算
+const aspectRatio = height && width ? `${width} / ${height}` : undefined;
+---
+
+<img
+  src={optimizedSrc}
+  srcset={srcset}
+  sizes={sizes}
+  alt={alt}
+  width={width}
+  height={height}
+  loading={loading}
+  decoding={priority ? 'sync' : 'async'}
+  fetchpriority={priority ? 'high' : 'auto'}
+  class={className}
+  style={aspectRatio ? `aspect-ratio: ${aspectRatio};` : undefined}
+/>

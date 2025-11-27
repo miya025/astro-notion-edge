@@ -1,5 +1,6 @@
 ---
 import Layout from '@/layouts/Layout.astro';
+import OptimizedImage from '@/components/Pro/OptimizedImage.astro';
 import { getPosts } from '@/lib/notion/client';
 
 // SSGとしてビルド時に静的生成 (Astro v5)
@@ -39,14 +40,15 @@ const posts = await getPosts();
             <a href={`/${post.slug}`} class="block">
               {post.coverImage && (
                 <div class="aspect-[16/9] overflow-hidden bg-gray-100 relative">
-                  <img
+                  <OptimizedImage
                     src={post.coverImage}
                     alt={post.title}
+                    width={800}
+                    height={450}
+                    quality={85}
+                    priority={index < 2}
                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    loading={index < 2 ? 'eager' : 'lazy'}
-                    decoding="async"
-                    width="800"
-                    height="450"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px"
                   />
                   <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
