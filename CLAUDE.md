@@ -91,7 +91,61 @@ Cloudflare Pages Functions (Hono) を活用し、動的機能を提供する。
 *   **Backend:** **Hono** (on Cloudflare Workers/Pages Functions)
     *   `/api/preview`: 下書き記事をSSRでレンダリングして返す。
     *   `/og/[slug].png`: `satori` を使いOGP画像をオンデマンド生成・キャッシュ。
+*   **Image:** **Cloudflare Image Resizing** によるオンデマンド画像最適化。
 *   **Search:** ビルド時にインデックスを生成し、静的ファイルとして配信 (Pagefind推奨)。
+
+### 画像最適化アーキテクチャ (Pro版)
+
+Pro版では **Cloudflare Image Resizing** を活用し、LCPスコアを最大化する。
+
+#### 仕組み
+```
+[Notion S3 URL] → [/cdn-cgi/image/...] → [Cloudflare Edge] → [最適化済み画像]
+                          ↓
+              width, height, format, quality を指定
+```
+
+#### コンポーネント: `PostImage.astro`
+
+| 環境 | 挙動 |
+|:---|:---|
+| **本番 (PROD)** | `/cdn-cgi/image/width=1200,height=675,fit=scale-down,quality=80,format=auto/{URL}` 形式に変換 |
+| **開発 (DEV)** | 元のNotion URLをそのまま使用（Cloudflare機能は動かないため） |
+
+#### Props
+
+| Prop | Type | Default | 説明 |
+|:---|:---|:---|:---|
+| `src` | `string` | 必須 | 画像URL（Notion S3 or ローカルパス） |
+| `alt` | `string` | 必須 | 代替テキスト |
+| `width` | `number` | `1200` | 出力幅（px） |
+| `height` | `number` | `675` | 出力高さ（px） |
+| `priority` | `boolean` | `false` | LCP対象の場合 `true`（`fetchpriority="high"`, `loading="eager"`） |
+| `fit` | `string` | `scale-down` | `scale-down`, `contain`, `cover`, `crop`, `pad` |
+| `quality` | `number` | `80` | 画質（1-100） |
+| `format` | `string` | `auto` | `webp`, `avif`, `auto` |
+
+#### LCP最適化のベストプラクティス
+
+1. **ファーストビュー画像には `priority={true}` を指定**
+   - `loading="eager"` + `fetchpriority="high"` が適用される
+   - ブラウザが優先的に画像をダウンロード
+
+2. **適切なサイズを指定**
+   - 実際の表示サイズに合わせた `width`/`height` を設定
+   - 不要に大きな画像を配信しない
+
+3. **format="auto" を推奨**
+   - ブラウザ対応に応じてWebP/AVIFを自動選択
+   - Cloudflare Edgeでキャッシュされ、以降は高速配信
+
+#### Cloudflare設定要件
+
+Cloudflare Image Resizing を利用するには、以下の設定が必要：
+
+1. **Cloudflare Pro以上のプラン**（Image Resizing機能が含まれる）
+2. **DNSプロキシ有効**（オレンジ雲マーク）
+3. **Image Resizing有効化**（ダッシュボード → Speed → Optimization → Image Resizing）
 
 ---
 
@@ -106,6 +160,7 @@ Free版はここから `functions/` や `components/Pro/` を除いた構成と�
 │   ├── components/
 │   │   ├── Notion/          # Notionブロック変換 (共通)
 │   │   ├── SEO/             # Metaタグなど (共通)
+│   │   ├── PostImage.astro  # ★Pro版: Cloudflare Image Resizing対応
 │   │   └── Pro/             # ★Pro限定機能
 │   │       ├── AdSense.astro
 │   │       ├── CTA.astro
