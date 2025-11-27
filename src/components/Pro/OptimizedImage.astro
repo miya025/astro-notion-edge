@@ -36,12 +36,19 @@ const {
 /**
  * Cloudflare Image Resizing URLを生成
  * https://developers.cloudflare.com/images/image-resizing/
+ *
+ * ローカル環境では元のURLをそのまま返す
+ * 本番環境ではCloudflare Image Resizingを使用
  */
 function getOptimizedUrl(imageUrl: string, width: number, format: 'auto' | 'webp' | 'avif' = 'auto'): string {
-  // 外部URLの場合はそのまま、内部URLの場合はCloudflare Image Resizingを使用
   if (!imageUrl) return '';
 
-  // Cloudflare Image Resizing パラメータ
+  // 開発環境では元の画像URLをそのまま返す
+  if (import.meta.env.DEV) {
+    return imageUrl;
+  }
+
+  // 本番環境: Cloudflare Image Resizing を使用
   const params = [
     `width=${width}`,
     `quality=${quality}`,
