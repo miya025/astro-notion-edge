@@ -1,5 +1,6 @@
 ---
 import type { NotionBlock } from '@/lib/notion/types';
+import PostImage from '@/components/PostImage.astro';
 
 interface Props {
   blocks: NotionBlock[];
@@ -86,14 +87,15 @@ function renderRichText(richText: any[]): string {
         const caption = content.caption.length > 0 ? renderRichText(content.caption) : '';
         return (
           <figure class="my-8 -mx-4 sm:mx-0">
-            <img
+            <PostImage
               src={imageUrl}
               alt={caption || 'Image'}
               class="w-full rounded-xl shadow-lg"
-              loading="lazy"
-              decoding="async"
-              width="1200"
-              height="675"
+              width={1200}
+              height={675}
+              fit="scale-down"
+              quality={80}
+              format="auto"
             />
             {caption && <figcaption class="text-sm text-gray-500 mt-3 text-center px-4" set:html={caption} />}
           </figure>
