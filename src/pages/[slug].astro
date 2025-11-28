@@ -30,6 +30,7 @@ const blocks = await getPageBlocks(post.id);
   image={post.coverImage || undefined}
   article={true}
   publishedTime={post.publishedDate || undefined}
+  slug={post.slug}
 >
   <article class="max-w-4xl mx-auto px-4 py-8 md:py-12 bg-white rounded-2xl shadow-sm my-8">
     <!-- Header -->

@@ -1,6 +1,6 @@
 name = "astro-notion-edge-pro"
 compatibility_date = "2024-11-26"
-compatibility_flags = ["nodejs_compat"]
+compatibility_flags = ["nodejs_compat_v2"]
 pages_build_output_dir = "./dist"
 
 # Cloudflare Pages の設定
