@@ -7,19 +7,27 @@ interface Props {
   image?: string;
   article?: boolean;
   publishedTime?: string;
+  slug?: string;
 }
 
 const {
   title = SITE_CONFIG.title,
   description = SITE_CONFIG.description,
-  image = SITE_CONFIG.ogImage,
+  image,
   article = false,
   publishedTime,
+  slug,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const fullTitle = title === SITE_CONFIG.title ? title : `${title} | ${SITE_CONFIG.title}`;
-const ogImageURL = new URL(image, Astro.site);
+
+// 動的OGP画像: 記事ページ（slugあり）は動的生成、それ以外は静的画像を使用
+const ogImageURL = slug
+  ? new URL(`/api/og/${slug}.png`, Astro.site)
+  : image
+    ? new URL(image, Astro.site)
+    : new URL(SITE_CONFIG.ogImage, Astro.site);
 ---
 
 <!-- Primary Meta Tags -->
