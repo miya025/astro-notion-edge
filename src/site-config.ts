@@ -16,4 +16,9 @@ export const SITE_CONFIG = {
     twitter: 'https://twitter.com/yourusername',
     github: 'https://github.com/yourusername',
   },
+
+  // Cloudflare Image Resizing (Pro版機能)
+  // Cloudflare Pro以上のプランを使用している場合はtrueに設定
+  // Freeプランの場合はfalseのままにしてください
+  useCloudflareImageResizing: false,
 } as const;

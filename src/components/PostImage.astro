@@ -2,11 +2,14 @@
 /**
  * PostImage.astro - Pro版画像最適化コンポーネント
  *
- * 本番環境: Cloudflare Image Resizing (/cdn-cgi/image/...) で動的最適化
- * 開発環境: 生のNotion URLをそのまま表示（フォールバック）
+ * Cloudflare Image Resizing有効時: /cdn-cgi/image/... で動的最適化
+ * 無効時またはローカル開発: 生のNotion URLをそのまま表示
  *
+ * site-config.ts の useCloudflareImageResizing で切り替え可能
  * LCP最適化のため、priority属性でプリロードを制御可能
  */
+
+import { SITE_CONFIG } from '@/site-config';
 
 interface Props {
   src: string;
@@ -35,6 +38,7 @@ const {
 } = Astro.props;
 
 const isProd = import.meta.env.PROD;
+const useImageResizing = SITE_CONFIG.useCloudflareImageResizing && isProd;
 
 /**
  * Cloudflare Image Resizing URL を生成
@@ -71,8 +75,8 @@ function buildCloudflareImageUrl(originalUrl: string): string {
   return `/cdn-cgi/image/${options}/${originalUrl}`;
 }
 
-// 本番環境ではCloudflare Image Resizing、開発環境では元URLを使用
-const imageSrc = isProd ? buildCloudflareImageUrl(src) : src;
+// Image Resizing有効時のみCloudflare経由、それ以外は元URLを使用
+const imageSrc = useImageResizing ? buildCloudflareImageUrl(src) : src;
 
 // プリロード用のヒント（LCP最適化）
 const fetchPriority = priority ? 'high' : 'auto';
