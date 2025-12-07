@@ -1,4 +1,4 @@
-# Astro × Notion Blog Starter (Free Edition)
+# Astro × Notion Blog Starter
 
 **"Notionで書き、Edgeで配信する。WordPressより速く、セキュアなブログ基盤"**
 
@@ -11,7 +11,11 @@ NotionをヘッドレスCMSとして使用し、Astroで高速な静的サイト
 - 🎨 **シンプルでクリーンなデザイン** - Tailwind CSS使用
 - 🔒 **セキュア** - 静的サイト生成でサーバー攻撃の心配なし
 - 📱 **完全レスポンシブ対応**
-- 🌐 **SEO最適化済み** - Meta Tags, OGP, Sitemap対応
+- 🌐 **SEO最適化済み** - Meta Tags, OGP, JSON-LD, Sitemap, RSS Feed対応
+- 👀 **リアルタイムプレビュー** - 下書き記事をパスワード付きで即時確認
+- 🖼️ **動的OGP画像生成** - タイトル入り画像をEdgeで自動生成
+- 💰 **収益化対応** - AdSense、CTA管理機能内蔵
+- 🔍 **全文検索機能** - 高速なサイト内検索
 
 ## 📋 必要なもの
 
@@ -44,6 +48,8 @@ NotionをヘッドレスCMSとして使用し、Astroで高速な静的サイト
 | Excerpt | テキスト | |
 | CoverImage | ファイル&メディア | |
 | Author | ユーザー | |
+| IsAdSense | チェックボックス | |
+| RelatedCTA | リレーション | |
 
 4. データベースURLの`https://notion.so/`と`?v=`の間の文字列をコピー
    - 例: `https://notion.so/XXXXXXXXXX?v=YYYY` → `XXXXXXXXXX`がDatabase ID
@@ -54,8 +60,8 @@ NotionをヘッドレスCMSとして使用し、Astroで高速な静的サイト
 
 ```bash
 # リポジトリをクローン（またはZipをダウンロード）
-git clone https://github.com/yourusername/astro-notion-edge-starter.git
-cd astro-notion-edge-starter
+git clone https://github.com/yourusername/astro-notion-edge.git
+cd astro-notion-edge
 
 # 依存関係をインストール
 npm install
@@ -172,13 +178,4 @@ MIT License
 
 ## 🙋 サポート
 
-質問やバグ報告は[GitHub Issues](https://github.com/yourusername/astro-notion-edge-starter/issues)へ。
-
----
-
-**Pro版** では以下の機能が追加されます:
-- リアルタイムプレビュー機能
-- 動的OGP画像生成
-- AdSense対応
-- CTA管理機能
-- 全文検索機能
+質問やバグ報告は[GitHub Issues](https://github.com/yourusername/astro-notion-edge/issues)へ。
