@@ -45,7 +45,7 @@ export async function downloadImage(url: string): Promise<string> {
   }
 
   const filename = getHashedFilename(url);
-  const localPath = `/${IMAGES_DIR.replace('public', '')}/${filename}`;
+  const localPath = `/images/notion/${filename}`;
   const fullPath = path.join(process.cwd(), IMAGES_DIR, filename);
 
   // 既にダウンロード済みならスキップ
