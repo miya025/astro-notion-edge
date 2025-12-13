@@ -2,6 +2,9 @@
 dist/
 .astro/
 
+# Downloaded Notion images (regenerated on build)
+public/images/notion/
+
 # dependencies
 node_modules/
 

@@ -1,6 +1,8 @@
 import { Client } from '@notionhq/client';
 import type { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 import { NotionPostSchema, type NotionPost, type NotionBlock, type CTA } from './types';
+import { downloadImage } from '../image-downloader';
+import { SITE_CONFIG } from '@/site-config';
 
 const notion = new Client({
   auth: import.meta.env.NOTION_TOKEN,
@@ -118,6 +120,7 @@ export async function getPostBySlugForPreview(slug: string): Promise<NotionPost 
 
 /**
  * ページIDからブロック（記事本文）を取得
+ * 画像ブロックはビルド時にダウンロード処理を行う
  */
 export async function getPageBlocks(pageId: string): Promise<NotionBlock[]> {
   try {
@@ -126,10 +129,36 @@ export async function getPageBlocks(pageId: string): Promise<NotionBlock[]> {
       page_size: 100,
     });
 
-    return response.results as NotionBlock[];
+    const blocks = response.results as NotionBlock[];
+
+    // ビルド時に画像をダウンロード（Cloudflare Image Resizing無効時のみ）
+    const shouldDownload = import.meta.env.PROD && !SITE_CONFIG.useCloudflareImageResizing;
+    if (shouldDownload) {
+      await processBlockImages(blocks);
+    }
+
+    return blocks;
   } catch (error) {
     console.error(`Failed to fetch blocks for page ${pageId}:`, error);
     return [];
+  }
+}
+
+/**
+ * ブロック内の画像をダウンロードしてローカルパスに置換
+ */
+async function processBlockImages(blocks: NotionBlock[]): Promise<void> {
+  for (const block of blocks) {
+    if (block.type === 'image') {
+      const content = block.image;
+      if (content.type === 'external' && content.external?.url) {
+        const localPath = await downloadImage(content.external.url);
+        content.external.url = localPath;
+      } else if (content.type === 'file' && content.file?.url) {
+        const localPath = await downloadImage(content.file.url);
+        content.file.url = localPath;
+      }
+    }
   }
 }
 
@@ -246,10 +275,21 @@ async function parseNotionPage(page: PageObjectResponse): Promise<NotionPost | n
     let coverImage: string | null = null;
     if (coverProp?.type === 'files' && coverProp.files.length > 0) {
       const file = coverProp.files[0];
+      let originalUrl: string | null = null;
       if (file.type === 'external') {
-        coverImage = file.external.url;
+        originalUrl = file.external.url;
       } else if (file.type === 'file') {
-        coverImage = file.file.url;
+        originalUrl = file.file.url;
+      }
+
+      // ビルド時に画像をダウンロード（Cloudflare Image Resizing無効時のみ）
+      if (originalUrl) {
+        const shouldDownload = import.meta.env.PROD && !SITE_CONFIG.useCloudflareImageResizing;
+        if (shouldDownload) {
+          coverImage = await downloadImage(originalUrl);
+        } else {
+          coverImage = originalUrl;
+        }
       }
     }
 

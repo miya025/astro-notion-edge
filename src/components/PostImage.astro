@@ -1,9 +1,11 @@
 ---
 /**
- * PostImage.astro - Pro版画像最適化コンポーネント
+ * PostImage.astro - 画像最適化コンポーネント
  *
- * Cloudflare Image Resizing有効時: /cdn-cgi/image/... で動的最適化
- * 無効時またはローカル開発: 生のNotion URLをそのまま表示
+ * 動作モード:
+ * - useCloudflareImageResizing: true → Cloudflare Image Resizing経由で最適化
+ * - useCloudflareImageResizing: false → ビルド時ダウンロード済みのローカル画像を使用
+ * - 開発時 → 元のNotion URLをそのまま使用
  *
  * site-config.ts の useCloudflareImageResizing で切り替え可能
  * LCP最適化のため、priority属性でプリロードを制御可能
@@ -50,20 +52,6 @@ function buildCloudflareImageUrl(originalUrl: string): string {
     return originalUrl;
   }
 
-  // 相対パス（ローカル画像）の場合
-  if (originalUrl.startsWith('/')) {
-    const options = [
-      `width=${width}`,
-      `height=${height}`,
-      `fit=${fit}`,
-      `quality=${quality}`,
-      `format=${format}`,
-    ].join(',');
-
-    return `/cdn-cgi/image/${options}${originalUrl}`;
-  }
-
-  // 外部URL（Notion S3など）の場合
   const options = [
     `width=${width}`,
     `height=${height}`,
@@ -72,11 +60,38 @@ function buildCloudflareImageUrl(originalUrl: string): string {
     `format=${format}`,
   ].join(',');
 
+  // 相対パス（ローカル画像）の場合
+  if (originalUrl.startsWith('/')) {
+    return `/cdn-cgi/image/${options}${originalUrl}`;
+  }
+
+  // 外部URL（Notion S3など）の場合
   return `/cdn-cgi/image/${options}/${originalUrl}`;
 }
 
-// Image Resizing有効時のみCloudflare経由、それ以外は元URLを使用
-const imageSrc = useImageResizing ? buildCloudflareImageUrl(src) : src;
+/**
+ * 画像URLを決定
+ * - 本番 + Image Resizing有効 → Cloudflare経由
+ * - 本番 + Image Resizing無効 → ローカルパス（既にダウンロード済み）
+ * - 開発 → 元URL
+ */
+function getImageSrc(originalSrc: string): string {
+  if (!isProd) {
+    // 開発時は元URLをそのまま使用
+    return originalSrc;
+  }
+
+  if (useImageResizing) {
+    // Cloudflare Image Resizing経由
+    return buildCloudflareImageUrl(originalSrc);
+  }
+
+  // ローカルパス（ビルド時にダウンロード済み）をそのまま返す
+  // srcは既にNotionクライアントでローカルパスに変換済み
+  return originalSrc;
+}
+
+const imageSrc = getImageSrc(src);
 
 // プリロード用のヒント（LCP最適化）
 const fetchPriority = priority ? 'high' : 'auto';

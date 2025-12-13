@@ -89,6 +89,11 @@ export const SITE_CONFIG = {
   description: 'A fast, secure blog powered by Notion and Astro',
   author: 'Your Name',
   url: 'https://example.com',
+
+  // 画像最適化設定
+  // false (デフォルト): ビルド時にNotionから画像をダウンロード
+  // true: Cloudflare Image Resizing使用（Proプラン以上が必要）
+  useCloudflareImageResizing: false,
   // ...
 };
 ```
@@ -171,6 +176,10 @@ npm run build
 ### 画像が表示されない
 
 → NotionのCoverImageプロパティに画像がアップロードされているか確認。
+
+### 開発環境で画像が表示されるが本番で表示されない
+
+→ `useCloudflareImageResizing: true` の場合、Cloudflare Proプラン以上が必要です。Freeプランの場合は `false`（デフォルト）のままにしてください。
 
 ## 📄 ライセンス
 
