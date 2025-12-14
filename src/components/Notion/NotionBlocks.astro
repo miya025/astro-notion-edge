@@ -11,6 +11,47 @@ interface Props {
 const { blocks, previewToken } = Astro.props;
 
 /**
+ * 連続するリストアイテムをグループ化
+ */
+interface GroupedBlock {
+  type: 'single' | 'bulleted_list' | 'numbered_list';
+  blocks: NotionBlock[];
+}
+
+function groupBlocks(blocks: NotionBlock[]): GroupedBlock[] {
+  const grouped: GroupedBlock[] = [];
+  let currentList: GroupedBlock | null = null;
+
+  for (const block of blocks) {
+    if (block.type === 'bulleted_list_item') {
+      if (currentList?.type === 'bulleted_list') {
+        currentList.blocks.push(block);
+      } else {
+        if (currentList) grouped.push(currentList);
+        currentList = { type: 'bulleted_list', blocks: [block] };
+      }
+    } else if (block.type === 'numbered_list_item') {
+      if (currentList?.type === 'numbered_list') {
+        currentList.blocks.push(block);
+      } else {
+        if (currentList) grouped.push(currentList);
+        currentList = { type: 'numbered_list', blocks: [block] };
+      }
+    } else {
+      if (currentList) {
+        grouped.push(currentList);
+        currentList = null;
+      }
+      grouped.push({ type: 'single', blocks: [block] });
+    }
+  }
+  if (currentList) grouped.push(currentList);
+  return grouped;
+}
+
+const groupedBlocks = groupBlocks(blocks);
+
+/**
  * Notion画像URLをプロキシ経由URLに変換（プレビューモード時のみ）
  */
 function toProxyUrl(imageUrl: string): string {
@@ -40,7 +81,28 @@ function renderRichText(richText: any[]): string {
 ---
 
 <div class="notion-content space-y-5">
-  {blocks.map((block) => {
+  {groupedBlocks.map((group) => {
+    if (group.type === 'bulleted_list') {
+      return (
+        <ul class="list-disc space-y-1">
+          {group.blocks.map((block) => (
+            <li class="ml-5 pl-2 text-gray-700 text-[17px] leading-[1.8] marker:text-blue-500" set:html={renderRichText(block.bulleted_list_item.rich_text)} />
+          ))}
+        </ul>
+      );
+    }
+
+    if (group.type === 'numbered_list') {
+      return (
+        <ol class="list-decimal space-y-1">
+          {group.blocks.map((block) => (
+            <li class="ml-5 pl-2 text-gray-700 text-[17px] leading-[1.8] marker:text-blue-600 marker:font-semibold" set:html={renderRichText(block.numbered_list_item.rich_text)} />
+          ))}
+        </ol>
+      );
+    }
+
+    const block = group.blocks[0];
     const type = block.type;
     const content = block[type];
 
@@ -65,16 +127,6 @@ function renderRichText(richText: any[]): string {
       case 'heading_3':
         return (
           <h4 class="text-xl md:text-2xl font-semibold mt-8 mb-3 text-gray-900 leading-snug" set:html={renderRichText(content.rich_text)} />
-        );
-
-      case 'bulleted_list_item':
-        return (
-          <li class="ml-5 pl-2 text-gray-700 text-[17px] leading-[1.8] list-disc marker:text-blue-500" set:html={renderRichText(content.rich_text)} />
-        );
-
-      case 'numbered_list_item':
-        return (
-          <li class="ml-5 pl-2 text-gray-700 text-[17px] leading-[1.8] list-decimal marker:text-blue-600 marker:font-semibold" set:html={renderRichText(content.rich_text)} />
         );
 
       case 'quote':
