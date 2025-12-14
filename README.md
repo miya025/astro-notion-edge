@@ -81,9 +81,9 @@ NOTION_DATABASE_ID=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 ### 5. サイト設定
 
-**重要: 以下の2ファイルでサイトURLを設定してください。OGP画像やSEOが正しく機能するために必須です。**
+#### `astro.config.mjs` - サイトURLの設定
 
-#### `astro.config.mjs`
+**重要: OGP画像やSEOが正しく機能するために、サイトURLを設定してください。**
 
 ```javascript
 export default defineConfig({
@@ -92,14 +92,14 @@ export default defineConfig({
 });
 ```
 
-#### `src/site-config.ts`
+#### `src/site-config.ts` - サイト情報のカスタマイズ
 
 ```typescript
 export const SITE_CONFIG = {
   title: 'My Notion Blog',
   description: 'A fast, secure blog powered by Notion and Astro',
   author: 'Your Name',
-  url: 'https://yourdomain.com', // ← astro.config.mjsと同じURLに変更
+  lang: 'ja',
 
   // 画像最適化設定
   // false (デフォルト): ビルド時にNotionから画像をダウンロード

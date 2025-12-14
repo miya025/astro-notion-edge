@@ -23,7 +23,7 @@ const {
   tags = [],
 } = Astro.props;
 
-const siteUrl = SITE_CONFIG.url;
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') || '';
 const canonicalURL = slug ? `${siteUrl}/${slug}` : siteUrl;
 
 // Organization schema (共通)

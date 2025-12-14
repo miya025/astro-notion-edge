@@ -13,7 +13,7 @@ export async function GET(context: APIContext) {
     // チャンネル情報
     title: SITE_CONFIG.title,
     description: SITE_CONFIG.description,
-    site: context.site ?? SITE_CONFIG.url,
+    site: context.site!,
 
     // 記事アイテム
     items: posts.map((post) => ({
