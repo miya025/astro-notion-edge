@@ -2,7 +2,7 @@ export const SITE_CONFIG = {
   title: 'My Notion Blog',
   description: 'A fast, secure blog powered by Notion and Astro',
   author: 'Your Name',
-  url: 'https://miyadev.com', // astro.config.mjsと合わせる
+  url: 'https://example.com', // astro.config.mjsと合わせる
   lang: 'ja',
   ogImage: '/og-image.png',
 

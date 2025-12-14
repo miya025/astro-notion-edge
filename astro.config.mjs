@@ -5,7 +5,7 @@ import cloudflare from '@astrojs/cloudflare';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://miyadev.com', // ユーザーが変更する
+  site: 'https://example.com', // ユーザーが変更する
   output: 'server', // Pro版: SSR + API Routes (Edge Functions)
   adapter: cloudflare({
     imageService: 'cloudflare', // Cloudflare Image Resizing を利用
